@@ -1,46 +1,33 @@
+const db = require("../database.js");
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-const userModel = require("../Models/userModel");
-dotenv.config();
-const generateToken = (id, email) => {
-  const token = jwt.sign({ id, email }, process.env.JWT_SECRET, {
-    expiresIn: process.env.TOKEN_EXPIRE_TIME,
-  });
-  return token.toString();
-};
 
-const verifyToken = async (req, res, next) => {
+exports.isAuthenticated = async (req, res, next) => {
   try {
-    if (!req.headers["authorization"])
-      return res
-        .status(401)
-        .send({ errMessage: "Authorization token not found!" });
+    const { token } = req.cookies;
 
-    const header = req.headers["authorization"];
-    const token = header.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({
+        message: "Please login first!",
+      });
+    }
 
-    await jwt.verify(
-      token,
-      process.env.JWT_SECRET,
-      async (err, verifiedToken) => {
-        if (err)
-          return res
-            .status(401)
-            .send({ errMessage: "Authorization token invalid", details: err });
-        const user = await userModel.findById(verifiedToken.id);
-        req.user = user;
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    req.user = decoded;
+
+    const query = `SELECT * FROM user WHERE email = ?`;
+
+    db.query(query, [decoded.email], (error, result) => {
+      if (error) {
+        throw error;
+      } else if (result.lenght == 0) {
+        return res.status(400).json({ message: "Invalid Token!" });
+      } else {
+        req.user = result[0];
+
         next();
       }
-    );
-  } catch (error) {
-    return res.status(500).send({
-      errMesage: "Internal server error occured!",
-      details: error.message,
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-};
-
-module.exports = {
-  generateToken,
-  verifyToken,
 };

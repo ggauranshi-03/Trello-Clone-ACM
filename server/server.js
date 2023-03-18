@@ -1,56 +1,25 @@
-const dotenv = require('dotenv');
-const express = require('express');
-const unless = require('express-unless');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const userRoute = require('./Routes/userRoute');
-const boardRoute = require('./Routes/boardRoute');
-const listRoute = require('./Routes/listRoute');
-const cardRoute = require('./Routes/cardRoute');
-const auth = require('./Middlewares/auth');
-
-dotenv.config();
+require("dotenv").config();
+const express = require("express");
 const app = express();
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
-app.use(cors());
+//Using Middlewares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(cors());
 
-// AUTH VERIFICATION AND UNLESS
+//Importing Routes
+const userRoutes = require("./routes/userRoutes");
+const boardRoutes = require("./routes/boardRoutes");
+const listRoutes = require("./routes/listRoutes");
 
-auth.verifyToken.unless = unless;
+//Using Routes
+app.use("/api/v1", userRoutes);
+app.use("/api/v1", boardRoutes);
+app.use("/api/v1/list", listRoutes);
 
-app.use(
-	auth.verifyToken.unless({
-		path: [
-			{ url: '/user/login', method: ['POST'] },
-			{ url: '/user/register', method: ['POST'] },
-		],
-	})
-);
-
-//MONGODB CONNECTION
-
-mongoose.Promise = global.Promise;
-mongoose
-	.connect(process.env.MONGO_URI, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-	})
-	.then(() => {
-		console.log('Database connection is succesfull!');
-	})
-	.catch((err) => {
-		console.log(`Database connection failed!`);
-		console.log(`Details : ${err}`);
-	});
-
-//ROUTES
-
-app.use('/user', userRoute);
-app.use('/board', boardRoute);
-app.use('/list', listRoute);
-app.use('/card', cardRoute);
-
-app.listen(process.env.PORT, () => {
-	console.log(`Server is online! Port: ${process.env.PORT}`);
+app.listen(process.env.PORT, (req, res) => {
+  console.log(`Server listening 🎵 on port ${process.env.PORT}`);
 });
