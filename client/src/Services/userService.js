@@ -61,19 +61,24 @@ export const login = async ({ email, password }, dispatch) => {
   dispatch(loginStart());
   try {
     const res = await axios.post(baseUrl + "login", { email, password });
-    const { user, message } = res.data;
-    console.log(user);
-    localStorage.setItem("token", user.token);
-    setBearer(user.token);
-    dispatch(loginSuccess({ user }));
-    dispatch(
-      openAlert({
-        message,
-        severity: "success",
-        duration: 500,
-        nextRoute: "/boards",
-      })
-    );
+    const { result, token, message } = res.data;
+    console.log(result);
+    if (token) { // check if token is defined
+      localStorage.setItem("token", token);
+      setBearer(token);
+      dispatch(loginSuccess({ user: result[0] })); // pass the user object in the success action
+      dispatch(
+        openAlert({
+          message,
+          severity: "success",
+          duration: 500,
+          nextRoute: "/boards",
+        })
+      );
+    } else {
+      throw new Error("Token is undefined"); // throw an error if token is undefined
+    }
+
   } catch (error) {
     dispatch(loginFailure());
     dispatch(
