@@ -5,13 +5,17 @@ const validateCardOwners = async (
   user,
   isCreate = false
 ) => {
+  const cards = JSON.parse(list.cards);
+  const lists = JSON.parse(board.lists);
+  const boards = JSON.parse(user.boards);
+
   const validate = isCreate
     ? true
-    : list.cards.filter((item) => item.toString() === card.id.toString());
-  const validate2 = board.lists.filter(
+    : cards.filter((item) => item.toString() === card.id.toString());
+  const validate2 = lists.filter(
     (item) => item.toString() === list.id.toString()
   );
-  const validate3 = user.boards.filter(
+  const validate3 = boards.filter(
     (item) => item.toString() === board.id.toString()
   );
 

@@ -8,14 +8,6 @@ exports.create = async (req, res) => {
         .status(400)
         .json({ success: false, Message: "Title cannot be empty" });
 
-    // Validate whether boardId is in the user's boards or not
-    // const validate = req.user.board.filter((board) => board === boardId);
-    // if (!validate)
-    //   return res.status(400).send({
-    //     success: false,
-    //     Message:
-    //       "You can not add a list to the board, you are not a member or owner!",
-    //   });
     db.query(
       `SELECT boards FROM user WHERE id = ?`,
       [req.user.id],

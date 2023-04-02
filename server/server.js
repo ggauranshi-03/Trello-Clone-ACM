@@ -14,11 +14,13 @@ app.use(cors());
 const userRoutes = require("./routes/userRoutes");
 const boardRoutes = require("./routes/boardRoutes");
 const listRoutes = require("./routes/listRoutes");
+const cardRoutes = require("./routes/cardRoutes");
 
 //Using Routes
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", boardRoutes);
 app.use("/api/v1/list", listRoutes);
+app.use("/api/v1/card", cardRoutes);
 
 app.listen(process.env.PORT, (req, res) => {
   console.log(`Server listening 🎵 on port ${process.env.PORT}`);
