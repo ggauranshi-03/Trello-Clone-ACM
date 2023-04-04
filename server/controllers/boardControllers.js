@@ -87,16 +87,86 @@ exports.create = async (req, res) => {
   }
 };
 
+// exports.getAll = async (req, res) => {
+//   try {
+//     const id = req.user.id;
+//     db.query(`select boards from user WHERE id = ?`, [id], (error, result) => {
+//       if (error) {
+//         throw error;
+//       } else {
+//         const boards = JSON.parse(result[0].boards); // parse the JSON string into an array
+//         return res.status(200).json({ success: true, result: boards }); // return the array of boards
+//         // return res.status(200).json({ success: true, result });
+//       }
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+// exports.getAll = async (req, res) => {
+//   try {
+//     const email = req.user.email;
+//     db.query(
+//       `
+//       SELECT board.id, board.title, board.backgroundImageLink
+//       FROM user
+//       JOIN board ON user.id = board.id
+//       WHERE user.email = ?
+//     `,
+//       [email],
+//       (error, result) => {
+//         if (error) {
+//           throw error;
+//         } else {
+//           return res.status(200).json({ success: true, result });
+//         }
+//       }
+//     );
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 exports.getAll = async (req, res) => {
   try {
     const id = req.user.id;
-    db.query(`select boards from user WHERE id = ?`, [id], (error, result) => {
-      if (error) {
-        throw error;
-      } else {
-        return res.status(200).json({ success: true, result });
+    db.query(
+      `SELECT boards FROM user WHERE id = ?`,
+      [id],
+      async (error, result) => {
+        if (error) {
+          throw error;
+        } else {
+          const boardIds = JSON.parse(result[0].boards || "[]");
+
+          const boards = await Promise.all(
+            boardIds.map(async (boardId) => {
+              return new Promise((resolve, reject) => {
+                db.query(
+                  `SELECT * FROM board WHERE id = ?`,
+                  [boardId],
+                  (error, result) => {
+                    if (error) {
+                      reject(error);
+                    } else {
+                      resolve(result[0]);
+                    }
+                  }
+                );
+              });
+            })
+          );
+          res.status(200).json({ success: true, boards });
+        }
       }
-    });
+    );
   } catch (error) {
     res.status(500).json({
       success: false,
