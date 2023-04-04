@@ -109,3 +109,66 @@ exports.create = async (req, res) => {
     });
   }
 };
+
+exports.getCard = async (req, res) => {
+  try {
+    const user = req.user;
+    const { boardId, listId, cardId } = req.params;
+    db.query(
+      `SELECT * FROM board WHERE id = ?`,
+      [boardId],
+      async (error, board) => {
+        if (error) {
+          throw error;
+        } else {
+          db.query(
+            `SELECT * FROM list WHERE id = ?`,
+            [listId],
+            async (error, list) => {
+              if (error) {
+                throw error;
+              } else {
+                db.query(
+                  `SELECT * FROM card WHERE id = ?`,
+                  [cardId],
+                  async (error, card) => {
+                    if (error) {
+                      throw error;
+                    } else {
+                      // Validate owner
+                      const validate = await helperMethods.validateCardOwners(
+                        card,
+                        list,
+                        board,
+                        user,
+                        false
+                      );
+                      if (!validate) {
+                        errMessage: "You dont have permission to update this card";
+                      }
+
+                      let returnObject = {
+                        card: card,
+                        listTitle: list[0].title,
+                        listId: listId,
+                        boardId: boardId,
+                      };
+                      res
+                        .status(200)
+                        .json({ success: true, result: returnObject });
+                    }
+                  }
+                );
+              }
+            }
+          );
+        }
+      }
+    );
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

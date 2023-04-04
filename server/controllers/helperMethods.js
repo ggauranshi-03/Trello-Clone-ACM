@@ -5,21 +5,30 @@ const validateCardOwners = async (
   user,
   isCreate = false
 ) => {
-  const cards = JSON.parse(list.cards);
-  const lists = JSON.parse(board.lists);
+  const cards = JSON.parse(list[0].cards);
+  const lists = JSON.parse(board[0].lists);
   const boards = JSON.parse(user.boards);
 
-  const validate = isCreate
-    ? true
-    : cards.filter((item) => item.toString() === card.id.toString());
-  const validate2 = lists.filter(
-    (item) => item.toString() === list.id.toString()
+  console.log(
+    card[0].id.toString(),
+    list[0].id.toString(),
+    board[0].id.toString()
   );
-  const validate3 = boards.filter(
-    (item) => item.toString() === board.id.toString()
-  );
+  if (cards && lists && boards) {
+    const validate = isCreate
+      ? true
+      : cards.filter((item) => item.toString() === card[0].id.toString());
 
-  return validate && validate2 && validate3;
+    const validate2 = lists.filter(
+      (item) => item.toString() === list[0].id.toString()
+    );
+
+    const validate3 = boards.filter(
+      (item) => item.toString() === board[0].id.toString()
+    );
+
+    return validate && validate2 && validate3;
+  }
 };
 
 const labelsSeed = [
