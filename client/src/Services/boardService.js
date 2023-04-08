@@ -15,14 +15,14 @@ import {
   updateDescription,
 } from "../Redux/Slices/boardSlice";
 
-const listRoute = "http://localhost:3000/list";
+const listRoute = "http://localhost:8080/api/v1/list";
 const boardRoute = "http://localhost:3000/board";
 
 export const getLists = async (boardId, dispatch) => {
   dispatch(setLoading(true));
   try {
     const res = await axios.get(listRoute + "/" + boardId);
-    dispatch(successFetchingLists(res.data));
+    dispatch(successFetchingLists(res.data.result));
     setTimeout(() => {
       dispatch(setLoading(false));
     }, 300);
@@ -65,7 +65,7 @@ export const createList = async (title, boardId, dispatch) => {
       title: title,
       boardId: boardId,
     });
-    dispatch(successCreatingList(res.data));
+    dispatch(successCreatingList(res.data.result));
     dispatch(setLoading(false));
   } catch (error) {
     dispatch(setLoading(false));

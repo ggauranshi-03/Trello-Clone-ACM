@@ -62,8 +62,9 @@ export const login = async ({ email, password }, dispatch) => {
   try {
     const res = await axios.post(baseUrl + "login", { email, password });
     const { result, token, message } = res.data;
-    console.log(result);
-    if (token) { // check if token is defined
+    console.log(token);
+    if (token) {
+      // check if token is defined
       localStorage.setItem("token", token);
       setBearer(token);
       dispatch(loginSuccess({ user: result[0] })); // pass the user object in the success action
@@ -78,7 +79,6 @@ export const login = async ({ email, password }, dispatch) => {
     } else {
       throw new Error("Token is undefined"); // throw an error if token is undefined
     }
-
   } catch (error) {
     dispatch(loginFailure());
     dispatch(

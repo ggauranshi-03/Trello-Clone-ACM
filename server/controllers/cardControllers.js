@@ -26,29 +26,20 @@ exports.create = async (req, res) => {
               throw error;
             } else {
               const board = result[0];
-              db.query(
-                `SELECT * FROM user WHERE id = ?`,
-                [req.user.id],
-                (error, result) => {
-                  if (error) {
-                    throw error;
-                  } else {
-                    const user = result[0];
-                    const validate = helperMethods.validateCardOwners(
-                      null,
-                      list,
-                      board,
-                      user,
-                      true
-                    );
-                    if (!validate)
-                      return callback({
-                        Message:
-                          "You dont have permission to add card to this list or board",
-                      });
-                  }
-                }
+              const user = req.user;
+
+              const validate = helperMethods.validateCardOwners(
+                null,
+                list,
+                board,
+                user,
+                true
               );
+              if (!validate)
+                return callback({
+                  Message:
+                    "You dont have permission to add card to this list or board",
+                });
             }
           }
         );
@@ -86,10 +77,20 @@ exports.create = async (req, res) => {
                           if (error) {
                             throw error;
                           } else {
-                            res.status(201).json({
-                              success: true,
-                              message: "Created a card!",
-                            });
+                            db.query(
+                              `SELECT * FROM card WHERE id = ?`,
+                              [newCardId],
+                              (error, result) => {
+                                if (error) {
+                                  throw error;
+                                } else {
+                                  res.status(201).json({
+                                    success: true,
+                                    result,
+                                  });
+                                }
+                              }
+                            );
                           }
                         }
                       );
@@ -137,9 +138,9 @@ exports.getCard = async (req, res) => {
                     } else {
                       // Validate owner
                       const validate = await helperMethods.validateCardOwners(
-                        card,
-                        list,
-                        board,
+                        card[0],
+                        list[0],
+                        board[0],
                         user,
                         false
                       );

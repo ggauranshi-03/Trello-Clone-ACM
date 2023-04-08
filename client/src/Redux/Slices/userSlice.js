@@ -51,15 +51,15 @@ export const userSlice = createSlice({
       state.token = null;
       localStorage.removeItem("token");
     },
-    fetchingStart: (state)=>{
+    fetchingStart: (state) => {
       state.loading = true;
     },
     fetchingFinish: (state) => {
       state.loading = false;
     },
-    addNewBoard: (state,action) => {
-      state.userInfo.boards.unshift(action.payload);
-    }
+    addNewBoard: (state, action) => {
+      JSON.parse(state.userInfo.boards).unshift(action.payload);
+    },
   },
 });
 
@@ -75,6 +75,6 @@ export const {
   logout,
   fetchingStart,
   fetchingFinish,
-  addNewBoard
+  addNewBoard,
 } = userSlice.actions;
 export default userSlice.reducer;

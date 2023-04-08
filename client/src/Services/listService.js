@@ -6,7 +6,7 @@ import {
   deleteCard,
 } from "../Redux/Slices/listSlice";
 
-const baseUrl = "http://localhost:3000/card";
+const baseUrl = "http://localhost:3000/api/v1/card";
 
 export const createCard = async (title, listId, boardId, dispatch) => {
   dispatch(setLoading(true));
@@ -17,7 +17,10 @@ export const createCard = async (title, listId, boardId, dispatch) => {
       boardId: boardId,
     });
     dispatch(
-      successCreatingCard({ listId: listId, updatedList: updatedList.data })
+      successCreatingCard({
+        listId: listId,
+        updatedList: updatedList.data.result,
+      })
     );
     dispatch(setLoading(false));
   } catch (error) {

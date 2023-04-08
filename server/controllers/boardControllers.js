@@ -60,10 +60,20 @@ exports.create = async (req, res) => {
                                 if (error) {
                                   throw error;
                                 } else {
-                                  res.status(201).json({
-                                    success: true,
-                                    message: "Board Created",
-                                  });
+                                  db.query(
+                                    `SELECT * FROM board WHERE id = ?`,
+                                    [newBoardId],
+                                    (error, result) => {
+                                      if (error) {
+                                        throw error;
+                                      } else {
+                                        res.status(201).json({
+                                          success: true,
+                                          result,
+                                        });
+                                      }
+                                    }
+                                  );
                                 }
                               }
                             );
@@ -177,7 +187,12 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const validate = req.user.boards.filter((board) => board === req.params.id);
+    const id = req.params.id;
+
+    const userBoards = JSON.parse(req.user.boards);
+
+    const validate = userBoards.filter((board) => board === id);
+
     if (!validate)
       return res.status(400).send({
         success: false,

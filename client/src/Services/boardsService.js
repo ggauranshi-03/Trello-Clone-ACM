@@ -9,15 +9,19 @@ import {
   startCreatingBoard,
 } from "../Redux/Slices/boardsSlice";
 import { addNewBoard } from "../Redux/Slices/userSlice";
-import {setLoading, successFetchingBoard, updateTitle} from "../Redux/Slices/boardSlice";
-const baseUrl = "http://localhost:3000/board";
+import {
+  setLoading,
+  successFetchingBoard,
+  updateTitle,
+} from "../Redux/Slices/boardSlice";
+const baseUrl = "http://localhost:8080/api/v1";
 
-export const getBoards = async (fromDropDown,dispatch) => {
-  if(!fromDropDown)dispatch(startFetchingBoards());
+export const getBoards = async (fromDropDown, dispatch) => {
+  if (!fromDropDown) dispatch(startFetchingBoards());
   try {
     const res = await axios.get(baseUrl + "/");
     setTimeout(() => {
-      dispatch(successFetchingBoards({ boards: res.data }));
+      dispatch(successFetchingBoards({ boards: res.data.boards }));
     }, 1000);
   } catch (error) {
     dispatch(failFetchingBoards());
@@ -46,11 +50,12 @@ export const createBoard = async (props, dispatch) => {
   }
   try {
     const res = await axios.post(baseUrl + "/create", props);
-    dispatch(addNewBoard(res.data));
-    dispatch(successCreatingBoard(res.data));
+    dispatch(addNewBoard(res.data.result));
+    dispatch(successCreatingBoard(res.data.result));
+    console.log(res.data.result);
     dispatch(
       openAlert({
-        message: `${res.data.title} board has been successfully created`,
+        message: `${res.data.result[0].title} board has been successfully created`,
         severity: "success",
       })
     );
@@ -67,13 +72,13 @@ export const createBoard = async (props, dispatch) => {
   }
 };
 
-export const getBoard = async (boardId,dispatch) => {
+export const getBoard = async (boardId, dispatch) => {
   dispatch(setLoading(true));
   try {
     const res = await axios.get(baseUrl + "/" + boardId);
-      dispatch(successFetchingBoard(res.data));    
+    dispatch(successFetchingBoard(res.data.result));
     setTimeout(() => {
-      dispatch(setLoading(false));      
+      dispatch(setLoading(false));
     }, 1000);
   } catch (error) {
     dispatch(setLoading(false));
@@ -89,17 +94,19 @@ export const getBoard = async (boardId,dispatch) => {
 };
 
 export const boardTitleUpdate = async (title, boardId, dispatch) => {
-	try {
-		dispatch(updateTitle(title));
-		await axios.put(baseUrl + '/' + boardId + '/update-board-title', {title:title});
-	} catch (error) {	
-		dispatch(
-			openAlert({
-				message: error?.response?.data?.errMessage ? error.response.data.errMessage : error.message,
-				severity: 'error',
-			})
-		);
-	}
-
-
+  try {
+    dispatch(updateTitle(title));
+    await axios.put(baseUrl + "/" + boardId + "/update-board-title", {
+      title: title,
+    });
+  } catch (error) {
+    dispatch(
+      openAlert({
+        message: error?.response?.data?.errMessage
+          ? error.response.data.errMessage
+          : error.message,
+        severity: "error",
+      })
+    );
+  }
 };

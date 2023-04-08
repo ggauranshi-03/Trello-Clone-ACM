@@ -3,15 +3,18 @@ const jwt = require("jsonwebtoken");
 
 exports.isAuthenticated = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader) {
       return res.status(401).json({
         message: "Please login first!",
       });
     }
 
+    const token = authHeader.split(" ")[1];
+
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
     req.user = decoded;
 
     const query = `SELECT * FROM user WHERE email = ?`;
@@ -28,6 +31,7 @@ exports.isAuthenticated = async (req, res, next) => {
       }
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
