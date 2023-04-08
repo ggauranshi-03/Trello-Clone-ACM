@@ -156,11 +156,9 @@ const List = (props) => {
                       ref={provided.innerRef}
                       isDraggingOver={snapshot.isDraggingOver}
                     >
-                      {console.log(props)}
-                      {console.log(props.info)}
                       {console.log(props.info.cards)}
                       <CardWrapper dock={clickFooter}>
-                        {props.info.cards
+                        {JSON.parse(props.info.cards)
                           .filter((card) =>
                             props.searchString
                               ? card.title

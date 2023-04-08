@@ -68,8 +68,8 @@ export const getCard = async (cardId, listId, boardId, dispatch) => {
         })
     );
     await submitCall;
-
-    const card = await JSON.parse(JSON.stringify(response.data.result));
+    console.log(response.data);
+    const card = await JSON.parse(JSON.stringify(response.data.result[0]));
     dispatch(setCard(card));
     dispatch(setPending(false));
   } catch (error) {
