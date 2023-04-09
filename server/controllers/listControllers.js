@@ -34,43 +34,40 @@ exports.create = async (req, res) => {
         if (error) {
           throw error;
         } else {
-          db.query(
-            `SELECT LAST_INSERT_ID() as new_list_id`,
-            (error, result) => {
-              if (error) {
-                throw error;
-              } else {
-                const newListId = result[0].new_list_id;
-                db.query(
-                  `SELECT * FROM board WHERE id = ?`,
-                  [boardId],
-                  (error, result) => {
-                    if (error) {
-                      throw error;
-                    } else {
-                      const board = result[0];
-                      const boardLists = JSON.parse(board.lists || "[]");
-                      boardLists.unshift(newListId);
-                      db.query(
-                        `UPDATE board SET lists = ? where id = ?`,
-                        [JSON.stringify(boardLists), boardId],
-                        (error, result) => {
-                          if (error) {
-                            throw error;
-                          } else {
-                            res.status(201).json({
-                              success: true,
-                              message: "list created",
-                            });
-                          }
+          db.query(`SELECT LAST_INSERTid() as new_listid`, (error, result) => {
+            if (error) {
+              throw error;
+            } else {
+              const newListId = result[0].new_listid;
+              db.query(
+                `SELECT * FROM board WHERE id = ?`,
+                [boardId],
+                (error, result) => {
+                  if (error) {
+                    throw error;
+                  } else {
+                    const board = result[0];
+                    const boardLists = JSON.parse(board.lists || "[]");
+                    boardLists.unshift(newListId);
+                    db.query(
+                      `UPDATE board SET lists = ? where id = ?`,
+                      [JSON.stringify(boardLists), boardId],
+                      (error, result) => {
+                        if (error) {
+                          throw error;
+                        } else {
+                          res.status(201).json({
+                            success: true,
+                            message: "list created",
+                          });
                         }
-                      );
-                    }
+                      }
+                    );
                   }
-                );
-              }
+                }
+              );
             }
-          );
+          });
         }
       }
     );

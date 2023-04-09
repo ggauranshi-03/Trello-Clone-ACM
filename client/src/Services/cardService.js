@@ -331,7 +331,7 @@ export const labelCreate = async (
 ) => {
   try {
     dispatch(
-      createLabel({ _id: "notUpdated", text, color, backColor, selected: true })
+      createLabel({ id: "notUpdated", text, color, backColor, selected: true })
     );
 
     let response = "";
@@ -363,7 +363,7 @@ export const labelCreate = async (
       createLabelForCard({
         listId,
         cardId,
-        _id: response.data.labelId,
+        id: response.data.labelId,
         text,
         color,
         backColor,
@@ -524,7 +524,7 @@ export const checklistCreate = async (
   dispatch
 ) => {
   try {
-    dispatch(createChecklist({ _id: "notUpdated", title }));
+    dispatch(createChecklist({ id: "notUpdated", title }));
 
     let response = "";
     submitCall = submitCall.then(() =>
@@ -553,7 +553,7 @@ export const checklistCreate = async (
       createChecklistForCard({
         listId,
         cardId,
-        _id: response.data.checklistId,
+        id: response.data.checklistId,
         title,
       })
     );
@@ -618,7 +618,7 @@ export const checklistItemAdd = async (
     dispatch(
       addChecklistItem({
         checklistId: checklistId,
-        _id: "notUpdated",
+        id: "notUpdated",
         text: text,
       })
     );
@@ -658,7 +658,7 @@ export const checklistItemAdd = async (
         listId,
         cardId,
         checklistId: checklistId,
-        _id: response.data.checklistItemId,
+        id: response.data.checklistItemId,
         text: text,
       })
     );
@@ -932,7 +932,7 @@ export const attachmentAdd = async (
 ) => {
   try {
     dispatch(
-      addAttachment({ link: link, name: name, _id: "notUpdated", date: Date() })
+      addAttachment({ link: link, name: name, id: "notUpdated", date: Date() })
     );
 
     let response = "";
@@ -965,7 +965,7 @@ export const attachmentAdd = async (
         cardId,
         link: link,
         name: name,
-        _id: response.data.attachmentId,
+        id: response.data.attachmentId,
         date: Date(),
       })
     );

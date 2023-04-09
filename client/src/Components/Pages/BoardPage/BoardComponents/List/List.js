@@ -48,7 +48,7 @@ const List = (props) => {
 
   const handleFooterClick = async () => {
     setNewCardTitle("");
-    await createCard(newCardTitle, props.info._id, props.info.owner, dispatch);
+    await createCard(newCardTitle, props.info.id, props.info.owner, dispatch);
     ref && ref.current && ref.current.scrollIntoView({ behavior: "smooth" });
   };
   const handleFooterCloseClick = () => {
@@ -62,7 +62,7 @@ const List = (props) => {
   const handleChangeTitle = async () => {
     if (props.info.title !== currentListTitle)
       await listTitleUpdate(
-        props.info._id,
+        props.info.id,
         props.info.owner,
         currentListTitle,
         dispatch
@@ -70,7 +70,7 @@ const List = (props) => {
   };
 
   const handleDeleteClick = () => {
-    DeleteList(props.info._id, props.info.owner, dispatch);
+    DeleteList(props.info.id, props.info.owner, dispatch);
   };
 
   const handleClickOutside = (e) => {
@@ -156,8 +156,8 @@ const List = (props) => {
                       ref={provided.innerRef}
                       isDraggingOver={snapshot.isDraggingOver}
                     >
-                      {console.log(props.info.cards)}
-                      <CardWrapper dock={clickFooter}>
+                      {/* {console.log(props.info.cards)} */}
+                      {/* <CardWrapper dock={clickFooter}>
                         {JSON.parse(props.info.cards)
                           .filter((card) =>
                             props.searchString
@@ -177,6 +177,47 @@ const List = (props) => {
                               />
                             );
                           })}
+                        {provided.placeholder}
+                        {clickFooter && (
+                          <AddTitleCardContainer ref={ref}>
+                            <TitleNewCardInput
+                              value={newCardTitle}
+                              autoFocus={true}
+                              placeholder="Enter a title for this card..."
+                              height={
+                                Math.floor(newCardTitle.length / 16) + "rem"
+                              }
+                              onChange={(e) => setNewCardTitle(e.target.value)}
+                            />
+                            <BottomButtonGroup
+                              title="Add card"
+                              clickCallback={handleFooterClick}
+                              closeCallback={handleFooterCloseClick}
+                            />
+                          </AddTitleCardContainer>
+                        )}
+                      </CardWrapper> */}
+                      <CardWrapper dock={clickFooter}>
+                        {props.info.cards &&
+                          JSON.parse(props.info.cards)
+                            .filter((card) =>
+                              props.searchString
+                                ? card.title
+                                    .toLowerCase()
+                                    .includes(props.searchString.toLowerCase())
+                                : true
+                            )
+                            .map((card, index) => {
+                              return (
+                                <Card
+                                  boardId={props.boardId}
+                                  listId={props.info.id}
+                                  key={card.id}
+                                  index={index}
+                                  info={card}
+                                />
+                              );
+                            })}
                         {provided.placeholder}
                         {clickFooter && (
                           <AddTitleCardContainer ref={ref}>

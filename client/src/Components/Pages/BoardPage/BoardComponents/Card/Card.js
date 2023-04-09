@@ -63,7 +63,7 @@ const Card = (props) => {
 
   return (
     <>
-      <Draggable draggableId={props.info._id} index={props.index}>
+      <Draggable draggableId={props.info.id} index={props.index}>
         {(provided, snapshot) => {
           return (
             <Container
@@ -80,7 +80,7 @@ const Card = (props) => {
               {labels && (
                 <LabelContainer>
                   {labels.map((label) => {
-                    return <Label key={label._id} color={label.color} />;
+                    return <Label key={label.id} color={label.color} />;
                   })}
                 </LabelContainer>
               )}
@@ -213,7 +213,7 @@ const Card = (props) => {
           open={openModal}
           callback={handleOpenClose}
           ids={{
-            cardId: props.info._id,
+            cardId: props.info.id,
             listId: props.listId,
             boardId: props.boardId,
           }}

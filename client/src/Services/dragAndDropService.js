@@ -19,11 +19,11 @@ export const updateCardOrder = async (props, dispatch) => {
   // Manupulate redux states first
   let tempList = JSON.parse(JSON.stringify(props.allLists));
   let cardItem = props.allLists
-    .filter((list) => list._id === props.sourceId)[0]
-    .cards.filter((card) => card._id === props.cardId)[0];
+    .filter((list) => list.id === props.sourceId)[0]
+    .cards.filter((card) => card.id === props.cardId)[0];
   if (props.sourceId === props.destinationId) {
     tempList = tempList.map((list) => {
-      if (list._id === props.sourceId) {
+      if (list.id === props.sourceId) {
         list.cards.splice(props.sourceIndex, 1);
         list.cards.splice(props.destinationIndex, 0, cardItem);
       }
@@ -31,12 +31,12 @@ export const updateCardOrder = async (props, dispatch) => {
     });
   } else {
     tempList = tempList.map((list) => {
-      if (list._id === props.sourceId) list.cards.splice(props.sourceIndex, 1);
+      if (list.id === props.sourceId) list.cards.splice(props.sourceIndex, 1);
       return list;
     });
 
     tempList = tempList.map((list) => {
-      if (list._id === props.destinationId) {
+      if (list.id === props.destinationId) {
         let temp = Array.from(list.cards);
         if (!temp) {
           temp = [cardItem];
@@ -84,7 +84,7 @@ export const updateListOrder = async (props, dispatch) => {
 
   // Manupulate the redux state first, we don't want to make the user wait because of the response time
   let tempList = JSON.parse(JSON.stringify(props.allLists));
-  let list = props.allLists.filter((item) => item._id === props.listId)[0];
+  let list = props.allLists.filter((item) => item.id === props.listId)[0];
   tempList.splice(props.sourceIndex, 1);
   tempList.splice(props.destinationIndex, 0, list);
 

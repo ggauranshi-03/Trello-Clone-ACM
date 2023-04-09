@@ -53,53 +53,50 @@ exports.create = async (req, res) => {
         if (error) {
           throw error;
         } else {
-          db.query(
-            `SELECT LAST_INSERT_ID() as new_card_id`,
-            (error, result) => {
-              if (error) {
-                throw error;
-              } else {
-                const newCardId = result[0].new_card_id;
-                db.query(
-                  `SELECT * FROM list WHERE id = ?`,
-                  [listId],
-                  (error, result) => {
-                    if (error) {
-                      throw error;
-                    } else {
-                      const list = result[0];
-                      const listCards = JSON.parse(list.cards || "[]");
-                      listCards.unshift(newCardId);
-                      db.query(
-                        `UPDATE list SET cards = ? WHERE id = ?`,
-                        [JSON.stringify(listCards), listId],
-                        (error, result) => {
-                          if (error) {
-                            throw error;
-                          } else {
-                            db.query(
-                              `SELECT * FROM card WHERE id = ?`,
-                              [newCardId],
-                              (error, result) => {
-                                if (error) {
-                                  throw error;
-                                } else {
-                                  res.status(201).json({
-                                    success: true,
-                                    result,
-                                  });
-                                }
+          db.query(`SELECT LAST_INSERTid() as new_cardid`, (error, result) => {
+            if (error) {
+              throw error;
+            } else {
+              const newCardId = result[0].new_cardid;
+              db.query(
+                `SELECT * FROM list WHERE id = ?`,
+                [listId],
+                (error, result) => {
+                  if (error) {
+                    throw error;
+                  } else {
+                    const list = result[0];
+                    const listCards = JSON.parse(list.cards || "[]");
+                    listCards.unshift(newCardId);
+                    db.query(
+                      `UPDATE list SET cards = ? WHERE id = ?`,
+                      [JSON.stringify(listCards), listId],
+                      (error, result) => {
+                        if (error) {
+                          throw error;
+                        } else {
+                          db.query(
+                            `SELECT * FROM card WHERE id = ?`,
+                            [newCardId],
+                            (error, result) => {
+                              if (error) {
+                                throw error;
+                              } else {
+                                res.status(201).json({
+                                  success: true,
+                                  result,
+                                });
                               }
-                            );
-                          }
+                            }
+                          );
                         }
-                      );
-                    }
+                      }
+                    );
                   }
-                );
-              }
+                }
+              );
             }
-          );
+          });
         }
       }
     );
