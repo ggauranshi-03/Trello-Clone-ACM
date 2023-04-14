@@ -16,73 +16,76 @@ exports.create = async (req, res) => {
         if (error) {
           throw error;
         } else {
-          db.query(`SELECT LAST_INSERTid() as new_boardid`, (error, result) => {
-            if (error) {
-              throw error;
-            } else {
-              const newBoardId = result[0].new_boardid;
+          db.query(
+            `SELECT LAST_INSERT_id() as new_boardid`,
+            (error, result) => {
+              if (error) {
+                throw error;
+              } else {
+                const newBoardId = result[0].new_boardid;
 
-              db.query(
-                `SELECT * FROM user WHERE id = ?`,
-                [req.user.id],
-                (error, result) => {
-                  if (error) {
-                    throw error;
-                  } else {
-                    const user = result[0];
-                    const userBoards = JSON.parse(user.boards || "[]");
-                    userBoards.unshift(newBoardId);
-                    db.query(
-                      `UPDATE user SET boards = ? WHERE id = ?`,
-                      [JSON.stringify(userBoards), req.user.id],
-                      (error, result) => {
-                        if (error) {
-                          throw error;
-                        } else {
-                          //Add user to the members of this board
-                          const allMembers = [];
-                          const owner = {
-                            id: req.user.id,
-                            name: req.user.name,
-                            surname: req.user.surname,
-                            email: req.user.email,
-                            color: req.user.color,
-                            role: "owner",
-                          };
-                          allMembers.push(owner);
+                db.query(
+                  `SELECT * FROM user WHERE id = ?`,
+                  [req.user.id],
+                  (error, result) => {
+                    if (error) {
+                      throw error;
+                    } else {
+                      const user = result[0];
+                      const userBoards = JSON.parse(user.boards || "[]");
+                      userBoards.unshift(newBoardId);
+                      db.query(
+                        `UPDATE user SET boards = ? WHERE id = ?`,
+                        [JSON.stringify(userBoards), req.user.id],
+                        (error, result) => {
+                          if (error) {
+                            throw error;
+                          } else {
+                            //Add user to the members of this board
+                            const allMembers = [];
+                            const owner = {
+                              id: req.user.id,
+                              name: req.user.name,
+                              surname: req.user.surname,
+                              email: req.user.email,
+                              color: req.user.color,
+                              role: "owner",
+                            };
+                            allMembers.push(owner);
 
-                          db.query(
-                            `UPDATE board SET members = ? WHERE id = ?`,
-                            [JSON.stringify(allMembers), newBoardId],
-                            (error, result) => {
-                              if (error) {
-                                throw error;
-                              } else {
-                                db.query(
-                                  `SELECT * FROM board WHERE id = ?`,
-                                  [newBoardId],
-                                  (error, result) => {
-                                    if (error) {
-                                      throw error;
-                                    } else {
-                                      res.status(201).json({
-                                        success: true,
-                                        result,
-                                      });
+                            db.query(
+                              `UPDATE board SET members = ? WHERE id = ?`,
+                              [JSON.stringify(allMembers), newBoardId],
+                              (error, result) => {
+                                if (error) {
+                                  throw error;
+                                } else {
+                                  db.query(
+                                    `SELECT * FROM board WHERE id = ?`,
+                                    [newBoardId],
+                                    (error, result) => {
+                                      if (error) {
+                                        throw error;
+                                      } else {
+                                        res.status(201).json({
+                                          success: true,
+                                          result,
+                                        });
+                                      }
                                     }
-                                  }
-                                );
+                                  );
+                                }
                               }
-                            }
-                          );
+                            );
+                          }
                         }
-                      }
-                    );
+                      );
+                    }
                   }
-                }
-              );
+                );
+              }
             }
-          });
+          );
         }
       }
     );

@@ -53,7 +53,7 @@ exports.create = async (req, res) => {
         if (error) {
           throw error;
         } else {
-          db.query(`SELECT LAST_INSERTid() as new_cardid`, (error, result) => {
+          db.query(`SELECT LAST_INSERT_id() as new_cardid`, (error, result) => {
             if (error) {
               throw error;
             } else {
